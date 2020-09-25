@@ -1,0 +1,173 @@
+public class Payroll 
+{
+    /*
+    instance variables
+    */
+    public boolean flag;
+    public double rate;
+    public double hours;
+    public double grossPay;
+    public double netPay;
+    public double fedTax;
+    public double stateTax;
+    public double fica;
+    public double ueiAndDi;
+    public double totalCost;
+    
+    
+    
+    /*
+    one custom constructor that will have 2 parameters
+    x = hours and y = rate
+    */
+    public Payroll (double hours, double rate)
+    {
+        this.hours = hours;
+        this.rate = rate;   
+        this.setTheOthers();
+    }
+    
+    /*
+    setTheOthers = doing all the calculations for the the payroll sheet
+    */
+    public void setTheOthers()
+    {
+        if(this.hours > 40)
+        {
+            this.flag = true;
+            this.grossPay = (this.rate * 40) + (this.hours - 40) * (this.rate * 1.5);
+        }
+        else
+        {
+            this.flag = false;
+            this.grossPay = this.rate * this.hours;
+        }
+
+        this.fedTax = this.grossPay * 0.25; 
+        this.stateTax = this.grossPay * 0.09075; 
+        this.fica = this.grossPay * 0.0765; 
+        this.netPay = this.grossPay - (this.fedTax + this.stateTax + this.fica);
+        this.ueiAndDi = this.grossPay * 0.02;
+        this.totalCost = this.grossPay + this.fica + this.ueiAndDi;
+    }
+    
+}//end class
+
+
+
+
+import java.util.*;
+public class PayrollTest 
+{
+    public static void main(String [] args)
+    {
+        ArrayList<Payroll> dataPay = new ArrayList<Payroll>();
+        
+        getInput(dataPay);
+        
+        printOut(dataPay);
+    }
+    
+    /*
+    getting the input from the user for the amount of Hours and Rate
+    */
+    
+    public static void getInput(ArrayList<Payroll> data)
+    {
+        double hour, rates;
+        Payroll temp;
+        Scanner stdin = new Scanner(System.in);
+       
+        //priming read for while loop to populate array
+        System.out.print("Enter hourly pay rate in dollars and cents --> ");
+        rates = stdin.nextDouble();
+       
+        /*
+        data validation for the rate so the compiler know when to stop
+        */
+        while(rates > 0)
+        {
+           
+            System.out.print("Enter number of hours and tenths worked --> ");
+            hour = stdin.nextDouble();
+            
+            temp = new Payroll(hour, rates);
+            
+            data.add(temp);
+            System.out.println();
+           
+            System.out.print("Enter hourly pay rate in dollars and cents --> ");
+            rates = stdin.nextDouble();
+        }//end while loop
+        
+        System.out.println();
+        
+    }
+   /*
+    print out method so that it would come out in decimal alignment and it would look nice
+    */
+    public static void printOut(ArrayList<Payroll> data)
+    {
+        /*
+        the accumulators are set to 0
+        */
+        double hours = 0;
+        double grossPay = 0;
+        double fedTax = 0;
+        double stateTax = 0;
+        double fica= 0;
+        double ueiAndDi = 0;
+        double netPay = 0;
+        double totalCost = 0;
+               
+        System.out.print("        Rate   Hours         Gross         Fed          State         FICA       UEI/DI       Net          Cost\n");
+       
+        /*
+        for loop for the nummade 
+        */
+        int numMade;
+        for(numMade = 0; numMade < data.size(); numMade++)
+        {
+            if(data.get(numMade).hours > 40)
+            {
+                System.out.printf("      %6.2f  %6.1f   %10.2f**   %10.2f  %10.2f    %10.2f  %10.2f  %10.2f    %10.2f\n",data.get(numMade).rate, data.get(numMade).hours,
+                data.get(numMade).grossPay, data.get(numMade).fedTax, data.get(numMade).stateTax, data.get(numMade).fica, data.get(numMade).ueiAndDi, data.get(numMade).netPay, data.get(numMade).totalCost);
+            }
+            else
+            {
+                System.out.printf("      %6.2f  %6.1f   %10.2f     %10.2f  %10.2f    %10.2f  %10.2f  %10.2f    %10.2f\n",data.get(numMade).rate, data.get(numMade).hours,
+                data.get(numMade).grossPay, data.get(numMade).fedTax, data.get(numMade).stateTax, data.get(numMade).fica, data.get(numMade).ueiAndDi,data.get(numMade).netPay, data.get(numMade).totalCost);
+            }
+           
+            //accumulating the variables
+            hours += data.get(numMade).hours;
+            grossPay += data.get(numMade).grossPay;
+            fedTax += data.get(numMade).fedTax;
+            stateTax += data.get(numMade).stateTax;
+            fica += data.get(numMade).fica;
+            ueiAndDi += data.get(numMade).ueiAndDi;
+            netPay += data.get(numMade).netPay;
+            totalCost += data.get(numMade).totalCost;
+           
+        }
+        
+        /*
+        printlns for the total summary for tha payroll sheet
+        */
+        System.out.println();
+        System.out.printf("Number if employees paid:    %d\n", numMade);
+        System.out.println();
+        System.out.printf("Total hours:       %26.1f\n", hours);
+        System.out.printf("Total gross pay:   %27.2f\n", grossPay);
+        System.out.printf("Total federal tax: %27.2f\n", fedTax);
+        System.out.printf("Total state tax:   %27.2f\n", stateTax);
+        System.out.printf("Total FICA:        %27.2f\n", fica);
+        System.out.printf("Total net pay:     %27.2f\n", netPay);
+        System.out.printf("Total employer's FICA contribution:     %6.2f\n", fica);
+        System.out.printf("Total employer's UEI contribution:      %6.2f\n", ueiAndDi);
+        System.out.printf("Total cost to Employer:       %16.2f\n", totalCost);
+        System.out.println();
+       
+    }//end method  
+    
+}//end payrollTest
